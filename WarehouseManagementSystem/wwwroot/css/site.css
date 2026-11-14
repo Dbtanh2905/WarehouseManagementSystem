@@ -1,0 +1,299 @@
+:root {
+    --wms-primary: #1E3A5F;
+    --wms-primary-hover: #152A45;
+    --wms-primary-light: #EBF3FC;
+    --wms-sidebar-bg: #1E3A5F;
+    --wms-sidebar-text: #E0E7FF;
+    --wms-sidebar-hover: #2B4C7E;
+    --wms-sidebar-active: #385E96;
+    --wms-body-bg: #F5F7FA;
+    --wms-card-bg: #FFFFFF;
+    --wms-border-color: #E2E8F0;
+    --wms-text-main: #1E293B;
+    --wms-text-muted: #64748B;
+    --wms-success: #10B981;
+    --wms-warning: #F59E0B;
+    --wms-danger: #EF4444;
+}
+
+body {
+    background-color: var(--wms-body-bg);
+    color: var(--wms-text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Layout Structure */
+.wms-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.wms-sidebar {
+    width: 260px;
+    background-color: var(--wms-sidebar-bg);
+    color: var(--wms-sidebar-text);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+}
+
+.wms-sidebar-brand {
+    padding: 1.25rem 1.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+}
+
+.wms-sidebar-brand i {
+    font-size: 1.4rem;
+    color: #60A5FA;
+}
+
+.wms-sidebar-menu {
+    list-style: none;
+    padding: 1rem 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.wms-sidebar-heading {
+    padding: 0.5rem 1.5rem 0.25rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94A3B8;
+    font-weight: 600;
+}
+
+.wms-nav-item {
+    margin: 0.15rem 0.75rem;
+}
+
+.wms-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    color: var(--wms-sidebar-text);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-size: 0.925rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.wms-nav-link i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+    color: #93C5FD;
+}
+
+.wms-nav-link:hover {
+    background-color: var(--wms-sidebar-hover);
+    color: #FFFFFF;
+}
+
+.wms-nav-link.active {
+    background-color: var(--wms-sidebar-active);
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.wms-main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.wms-topbar {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid var(--wms-border-color);
+    padding: 0.75rem 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.wms-content-body {
+    padding: 1.75rem;
+    flex-grow: 1;
+}
+
+/* Cards & Widgets */
+.wms-card {
+    background-color: var(--wms-card-bg);
+    border: 1px solid var(--wms-border-color);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    margin-bottom: 1.5rem;
+}
+
+.wms-card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--wms-border-color);
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: transparent;
+}
+
+.wms-card-body {
+    padding: 1.25rem;
+}
+
+.wms-stat-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--wms-border-color);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wms-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.wms-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.wms-stat-label {
+    font-size: 0.825rem;
+    color: var(--wms-text-muted);
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.wms-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--wms-text-main);
+    line-height: 1.2;
+}
+
+/* Tables */
+.wms-table {
+    width: 100%;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.wms-table th {
+    background-color: #F8FAFC;
+    color: var(--wms-text-muted);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--wms-border-color);
+}
+
+.wms-table td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--wms-border-color);
+}
+
+.wms-table tbody tr:hover {
+    background-color: #F8FAFC;
+}
+
+/* Badges */
+.badge-status {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.badge-status-confirmed {
+    background-color: #DCFCE7;
+    color: #166534;
+}
+
+.badge-status-draft {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-status-cancelled {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+
+.badge-status-instock {
+    background-color: #DCFCE7;
+    color: #166534;
+}
+
+.badge-status-lowstock {
+    background-color: #FFEDD5;
+    color: #9A3412;
+}
+
+.badge-status-outofstock {
+    background-color: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Custom Buttons */
+.btn-wms-primary {
+    background-color: var(--wms-primary);
+    border-color: var(--wms-primary);
+    color: #FFFFFF;
+}
+
+.btn-wms-primary:hover {
+    background-color: var(--wms-primary-hover);
+    border-color: var(--wms-primary-hover);
+    color: #FFFFFF;
+}
+
+/* Auth Page Layout */
+.wms-auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%);
+    padding: 1.5rem;
+}
+
+.wms-auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: #FFFFFF;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}

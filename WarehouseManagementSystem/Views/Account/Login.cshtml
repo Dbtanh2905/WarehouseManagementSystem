@@ -1,0 +1,93 @@
+@model WarehouseManagementSystem.ViewModels.LoginViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - Hệ Thống Quản Lý Kho Điện Tử WMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="wms-auth-container">
+        <div class="wms-auth-card">
+            <div class="p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3" style="width: 64px; height: 64px;">
+                        <i class="bi bi-cpu-fill fs-2"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark mb-1">HỆ THỐNG WMS</h4>
+                    <p class="text-muted small">Quản lý kho linh kiện điện tử sản xuất</p>
+                </div>
+
+                <form asp-controller="Account" asp-action="Login" method="post" id="loginForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ReturnUrl" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label small fw-semibold text-secondary"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" class="form-control" placeholder="admin@wms.com" id="emailInput" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label small fw-semibold text-secondary"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                            <input asp-for="Password" class="form-control" placeholder="••••••••" id="passwordInput" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label small text-secondary"></label>
+                    </div>
+
+                    <button type="submit" class="btn btn-wms-primary w-100 py-2 fw-semibold">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập hệ thống
+                    </button>
+                </form>
+
+                <!-- Demo quick login buttons -->
+                <div class="mt-4 pt-3 border-top">
+                    <div class="text-center small text-muted mb-2">Tài khoản demo kiểm thử:</div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary flex-grow-1" onclick="fillAccount('admin@wms.com', 'Admin@123456')">
+                            <i class="bi bi-shield-lock me-1"></i>Admin
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="fillAccount('staff@wms.com', 'Staff@123456')">
+                            <i class="bi bi-person me-1"></i>Staff
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-light py-2 text-center text-muted small border-top">
+                Warehouse Management System &bullet; Enterprise Edition
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        function fillAccount(email, pass) {
+            document.getElementById('emailInput').value = email;
+            document.getElementById('passwordInput').value = pass;
+        }
+    </script>
+</body>
+</html>

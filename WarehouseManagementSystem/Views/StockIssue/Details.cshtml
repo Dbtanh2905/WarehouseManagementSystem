@@ -1,0 +1,154 @@
+@model WarehouseManagementSystem.Models.StockIssue
+@{
+    ViewData["Title"] = $"Chi tiết phiếu xuất - {Model.IssueCode}";
+    int totalQuantity = Model.IssueDetails.Sum(d => d.Quantity);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <h4 class="fw-bold mb-0">Phiếu xuất kho: @Model.IssueCode</h4>
+            @if (Model.Status == WarehouseManagementSystem.Models.IssueStatus.Confirmed)
+            {
+                <span class="badge badge-status badge-status-confirmed fs-6">
+                    <i class="bi bi-check-circle-fill"></i>Đã xuất kho
+                </span>
+            }
+            else if (Model.Status == WarehouseManagementSystem.Models.IssueStatus.Draft)
+            {
+                <span class="badge badge-status badge-status-draft fs-6">
+                    <i class="bi bi-pencil"></i>Bản nháp
+                </span>
+            }
+            else
+            {
+                <span class="badge badge-status badge-status-cancelled fs-6">
+                    <i class="bi bi-x-circle"></i>Đã hủy
+                </span>
+            }
+        </div>
+        <p class="text-muted small mb-0 mt-1">
+            Ngày lập: @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm") &bullet; 
+            Người lập: <strong>@(Model.CreatedBy?.FullName ?? Model.CreatedBy?.UserName ?? "—")</strong>
+            @if (Model.ConfirmedAt.HasValue)
+            {
+                <span>&bullet; Ngày xác nhận xuất: <strong>@Model.ConfirmedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</strong></span>
+            }
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
+        </a>
+
+        @if (Model.Status == WarehouseManagementSystem.Models.IssueStatus.Draft)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil me-1"></i>Sửa bản nháp
+            </a>
+
+            <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn hủy phiếu xuất kho này?');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-x-circle me-1"></i>Hủy phiếu
+                </button>
+            </form>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <form asp-action="Confirm" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('XÁC NHẬN XUẤT KHO:\nHệ thống sẽ kiểm tra tồn kho tại vị trí xuất, trừ số lượng tồn kho và ghi sổ cái giao dịch. Bạn có chắc chắn muốn xuất kho ngay bây giờ?');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger btn-sm px-3 fw-semibold">
+                        <i class="bi bi-check2-circle me-1"></i>Xác nhận xuất kho
+                    </button>
+                </form>
+            }
+        }
+    </div>
+</div>
+
+<div class="row">
+    <!-- Cột Thông tin chung -->
+    <div class="col-md-4 mb-3">
+        <div class="wms-card">
+            <div class="wms-card-header">
+                <span class="fw-bold"><i class="bi bi-info-circle me-2 text-danger"></i>Thông tin phiếu xuất</span>
+            </div>
+            <div class="wms-card-body">
+                <div class="mb-3">
+                    <div class="text-muted small">Mã chứng từ:</div>
+                    <div class="fw-bold font-monospace text-danger">@Model.IssueCode</div>
+                </div>
+                <div class="mb-3">
+                    <div class="text-muted small">Ngày ghi nhận xuất:</div>
+                    <div class="fw-semibold">@Model.IssueDate.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="mb-3">
+                    <div class="text-muted small">Mục đích xuất / Chuyền sản xuất:</div>
+                    <div class="text-secondary small">@(string.IsNullOrWhiteSpace(Model.Note) ? "Cấp phát vật tư thông thường." : Model.Note)</div>
+                </div>
+                <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                    <span class="text-muted">Tổng số lượng xuất:</span>
+                    <span class="fs-4 fw-bold text-danger">-@totalQuantity.ToString("N0")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cột Chi tiết linh kiện -->
+    <div class="col-md-8 mb-3">
+        <div class="wms-card">
+            <div class="wms-card-header">
+                <span class="fw-bold"><i class="bi bi-boxes me-2 text-danger"></i>Danh mục linh kiện xuất kho</span>
+            </div>
+            <div class="wms-card-body p-0">
+                <div class="table-responsive">
+                    <table class="table wms-table align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">STT</th>
+                                <th>Mã linh kiện</th>
+                                <th>Tên linh kiện</th>
+                                <th>Vị trí kệ lấy hàng</th>
+                                <th class="text-end">Số lượng xuất</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int stt = 1; }
+                            @foreach (var d in Model.IssueDetails)
+                            {
+                                <tr>
+                                    <td class="text-muted">@(stt++)</td>
+                                    <td>
+                                        <a asp-controller="Product" asp-action="Details" asp-route-id="@d.ProductId" class="font-monospace fw-bold text-decoration-none">
+                                            @(d.Product?.ProductCode)
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">@(d.Product?.ProductName)</div>
+                                        <small class="text-muted">ĐVT: @(d.Product?.Unit)</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-danger border border-danger border-opacity-25 font-monospace">
+                                            @(d.Location?.LocationCode)
+                                        </span>
+                                        <div class="small text-secondary">@(d.Location?.LocationName)</div>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="fs-6 fw-bold text-danger">-@d.Quantity.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light">
+                                <td colspan="4" class="fw-bold text-end">TỔNG CỘNG SỐ LƯỢNG XUẤT:</td>
+                                <td class="text-end fw-bold text-danger fs-5">-@totalQuantity.ToString("N0")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

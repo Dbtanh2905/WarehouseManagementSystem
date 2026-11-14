@@ -1,0 +1,176 @@
+@{
+    ViewData["Title"] = "Báo cáo thống kê kho";
+    var inventoryReport = ViewBag.InventoryReport as List<WarehouseManagementSystem.ViewModels.InventoryItemViewModel> ?? new();
+    var topIssued = ViewBag.TopIssued as List<WarehouseManagementSystem.ViewModels.TopIssuedProductViewModel> ?? new();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Báo cáo & Thống kê nghiệp vụ kho</h4>
+        <p class="text-muted small mb-0">Tổng hợp tình hình tồn trữ, phân bổ vị trí và các mặt hàng linh kiện xuất dùng nhiều nhất</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="ExportInventoryCsv" asp-route-categoryId="@ViewData["CurrentCategory"]" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i>Xuất Báo Cáo Tồn (CSV)
+        </a>
+        <a asp-action="ExportTransactionsCsv" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i>Xuất Sổ Cái Giao Dịch (CSV)
+        </a>
+    </div>
+</div>
+
+<!-- Nav Tabs -->
+<ul class="nav nav-tabs mb-4" id="reportTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active fw-semibold" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button" role="tab">
+            <i class="bi bi-boxes me-2"></i>Báo cáo tồn kho hiện thời
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-semibold" id="topissued-tab" data-bs-toggle="tab" data-bs-target="#topissued" type="button" role="tab">
+            <i class="bi bi-trophy me-2 text-warning"></i>Top linh kiện xuất nhiều nhất
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="reportTabsContent">
+    <!-- Tab 1: Báo cáo tồn kho -->
+    <div class="tab-pane fade show active" id="inventory" role="tabpanel">
+        <div class="wms-card mb-4">
+            <div class="wms-card-body p-3">
+                <form method="get" class="row g-2">
+                    <div class="col-md-5">
+                        <select name="categoryId" asp-items="ViewBag.Categories" class="form-select">
+                            <option value="">-- Tất cả danh mục --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-secondary w-100"><i class="bi bi-filter me-1"></i>Xem báo cáo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="wms-card">
+            <div class="wms-card-body p-0">
+                <div class="table-responsive">
+                    <table class="table wms-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Mã linh kiện</th>
+                                <th>Tên linh kiện</th>
+                                <th>Danh mục</th>
+                                <th>ĐVT</th>
+                                <th>Định mức tối thiểu</th>
+                                <th class="text-end">Tổng tồn kho</th>
+                                <th>Trạng thái tồn kho</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in inventoryReport)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="font-monospace fw-bold text-decoration-none">
+                                            @item.ProductCode
+                                        </a>
+                                    </td>
+                                    <td class="fw-semibold text-dark">@item.ProductName</td>
+                                    <td><span class="badge bg-light text-secondary border">@item.CategoryName</span></td>
+                                    <td>@item.Unit</td>
+                                    <td class="text-muted">@item.MinimumStock.ToString("N0")</td>
+                                    <td class="text-end">
+                                        <span class="fw-bold fs-6 @(item.Status == WarehouseManagementSystem.Models.StockStatus.OutOfStock ? "text-danger" : (item.Status == WarehouseManagementSystem.Models.StockStatus.LowStock ? "text-warning" : "text-success"))">
+                                            @item.TotalQuantity.ToString("N0")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.Status == WarehouseManagementSystem.Models.StockStatus.OutOfStock)
+                                        {
+                                            <span class="badge badge-status badge-status-outofstock">Hết hàng</span>
+                                        }
+                                        else if (item.Status == WarehouseManagementSystem.Models.StockStatus.LowStock)
+                                        {
+                                            <span class="badge badge-status badge-status-lowstock">Sắp hết hàng</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-status badge-status-instock">Bình thường</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Top linh kiện xuất nhiều nhất -->
+    <div class="tab-pane fade" id="topissued" role="tabpanel">
+        <div class="wms-card mb-4">
+            <div class="wms-card-body p-3">
+                <form method="get" class="row g-2">
+                    <div class="col-md-3">
+                        <input type="date" name="fromDate" value="@ViewData["CurrentFromDate"]" class="form-control" title="Từ ngày" />
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" name="toDate" value="@ViewData["CurrentToDate"]" class="form-control" title="Đến ngày" />
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-secondary w-100"><i class="bi bi-filter me-1"></i>Lọc dữ liệu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="wms-card">
+            <div class="wms-card-body p-0">
+                <div class="table-responsive">
+                    <table class="table wms-table align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 70px;">Hạng</th>
+                                <th>Mã linh kiện</th>
+                                <th>Tên linh kiện</th>
+                                <th>Danh mục</th>
+                                <th class="text-end">Tổng số lượng đã xuất</th>
+                                <th class="text-end">Tồn kho hiện tại</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!topIssued.Any())
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">Chưa có dữ liệu xuất kho trong khoảng thời gian này</td>
+                                </tr>
+                            }
+                            @{ int rank = 1; }
+                            @foreach (var item in topIssued)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge @(rank == 1 ? "bg-warning text-dark" : (rank == 2 ? "bg-secondary text-white" : (rank == 3 ? "bg-info text-white" : "bg-light text-dark border")))">
+                                            #@rank
+                                        </span>
+                                    </td>
+                                    <td class="font-monospace fw-bold">@item.ProductCode</td>
+                                    <td class="fw-semibold text-dark">@item.ProductName</td>
+                                    <td><span class="badge bg-light text-secondary border">@item.CategoryName</span></td>
+                                    <td class="text-end">
+                                        <span class="fs-6 fw-bold text-danger">-@item.TotalQuantityIssued.ToString("N0") @item.Unit</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="fw-bold text-dark">@item.CurrentStock.ToString("N0") @item.Unit</span>
+                                    </td>
+                                </tr>
+                                rank++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

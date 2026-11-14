@@ -1,0 +1,103 @@
+@model List<WarehouseManagementSystem.Models.Supplier>
+@{
+    ViewData["Title"] = "Nhà cung cấp linh kiện";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Nhà cung cấp linh kiện</h4>
+        <p class="text-muted small mb-0">Quản lý đối tác và các nhà sản xuất bán dẫn cung ứng vật tư</p>
+    </div>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-wms-primary btn-sm px-3 py-2">
+            <i class="bi bi-plus-circle me-1"></i>Thêm nhà cung cấp mới
+        </a>
+    }
+</div>
+
+<div class="wms-card mb-4">
+    <div class="wms-card-body p-3">
+        <form method="get" class="row g-2">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Tìm theo tên nhà cung cấp, email, SĐT, địa chỉ..." />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-secondary w-100"><i class="bi bi-filter me-1"></i>Tìm kiếm</button>
+            </div>
+            @if (!string.IsNullOrEmpty(ViewData["CurrentSearch"] as string))
+            {
+                <div class="col-md-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100">Bỏ lọc</a>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="wms-card">
+    <div class="wms-card-body p-0">
+        <div class="table-responsive">
+            <table class="table wms-table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">Mã</th>
+                        <th>Tên nhà cung cấp</th>
+                        <th>Số điện thoại</th>
+                        <th>Email liên hệ</th>
+                        <th>Địa chỉ</th>
+                        <th>Linh kiện</th>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <th class="text-end" style="width: 140px;">Thao tác</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                <i class="bi bi-inbox fs-2 d-block mb-1"></i>Không có nhà cung cấp nào phù hợp
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">#@item.Id</td>
+                            <td>
+                                <span class="fw-semibold text-dark">@item.SupplierName</span>
+                            </td>
+                            <td>@(item.Phone ?? "—")</td>
+                            <td>@(item.Email ?? "—")</td>
+                            <td class="small text-secondary">@(item.Address ?? "—")</td>
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-box-seam me-1 text-primary"></i>@item.Products.Count mặt hàng
+                                </span>
+                            </td>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <td class="text-end">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1" title="Chỉnh sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

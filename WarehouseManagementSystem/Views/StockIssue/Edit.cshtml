@@ -1,0 +1,212 @@
+@model WarehouseManagementSystem.ViewModels.StockIssueCreateViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa phiếu xuất kho";
+    var products = ViewBag.Products as List<WarehouseManagementSystem.Models.Product> ?? new();
+    var locations = ViewBag.Locations as List<WarehouseManagementSystem.Models.WarehouseLocation> ?? new();
+    int issueId = (int)(ViewBag.IssueId ?? 0);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bold mb-1">Chỉnh sửa phiếu xuất kho</h4>
+        <p class="text-muted small mb-0">Cập nhật nội dung bản nháp phiếu @Model.IssueCode</p>
+    </div>
+    <a asp-action="Details" asp-route-id="@issueId" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Quay lại chi tiết
+    </a>
+</div>
+
+<form asp-action="Edit" asp-route-id="@issueId" method="post" id="issueForm">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="wms-card">
+                <div class="wms-card-header">
+                    <span class="fw-bold"><i class="bi bi-file-earmark-text me-2 text-danger"></i>Thông tin phiếu xuất</span>
+                </div>
+                <div class="wms-card-body">
+                    <div class="mb-3">
+                        <label asp-for="IssueCode" class="form-label fw-semibold small"></label> <span class="text-danger">*</span>
+                        <input asp-for="IssueCode" class="form-control font-monospace text-uppercase fw-bold text-danger" />
+                        <span asp-validation-for="IssueCode" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="IssueDate" class="form-label fw-semibold small"></label> <span class="text-danger">*</span>
+                        <input asp-for="IssueDate" type="date" value="@Model.IssueDate.ToString("yyyy-MM-dd")" class="form-control" />
+                        <span asp-validation-for="IssueDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Note" class="form-label fw-semibold small"></label>
+                        <textarea asp-for="Note" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 mb-3">
+            <div class="wms-card">
+                <div class="wms-card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-list-check me-2 text-danger"></i>Danh sách linh kiện xuất kho</span>
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="btnAddRow">
+                        <i class="bi bi-plus-circle me-1"></i>Thêm dòng
+                    </button>
+                </div>
+                <div class="wms-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table wms-table align-middle" id="detailsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40%;">Linh kiện <span class="text-danger">*</span></th>
+                                    <th style="width: 30%;">Vị trí kệ xuất <span class="text-danger">*</span></th>
+                                    <th style="width: 15%;">Tồn khả dụng</th>
+                                    <th style="width: 15%;">SL xuất <span class="text-danger">*</span></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailsBody">
+                                @for (int i = 0; i < Model.Details.Count; i++)
+                                {
+                                    <tr class="detail-row">
+                                        <td>
+                                            <select name="Details[@i].ProductId" class="form-select form-select-sm product-select" required>
+                                                <option value="">-- Chọn linh kiện --</option>
+                                                @foreach (var p in products)
+                                                {
+                                                    <option value="@p.Id" selected="@(Model.Details[i].ProductId == p.Id)">
+                                                        @p.ProductCode - @p.ProductName (@p.Unit)
+                                                    </option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="Details[@i].LocationId" class="form-select form-select-sm location-select" required>
+                                                <option value="">-- Chọn vị trí kệ --</option>
+                                                @foreach (var l in locations)
+                                                {
+                                                    <option value="@l.Id" selected="@(Model.Details[i].LocationId == l.Id)">
+                                                        @l.LocationCode - @l.LocationName
+                                                    </option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <span class="stock-badge badge bg-light text-secondary border">0</span>
+                                        </td>
+                                        <td>
+                                            <input type="number" name="Details[@i].Quantity" value="@Model.Details[i].Quantity" min="1" class="form-control form-control-sm text-end qty-input" required />
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-link text-danger p-0 btn-remove-row" title="Xóa dòng">
+                                                <i class="bi bi-trash fs-5"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="wms-card-body border-top d-flex justify-content-end gap-2">
+                    <a asp-action="Details" asp-route-id="@issueId" class="btn btn-light">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-danger px-4">
+                        <i class="bi bi-check2 me-1"></i>Cập nhật phiếu xuất
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tbody = document.getElementById('detailsBody');
+            const btnAdd = document.getElementById('btnAddRow');
+
+            function checkStock(row) {
+                const prodSelect = row.querySelector('.product-select');
+                const locSelect = row.querySelector('.location-select');
+                const badge = row.querySelector('.stock-badge');
+                const qtyInput = row.querySelector('.qty-input');
+
+                const prodId = prodSelect ? prodSelect.value : '';
+                const locId = locSelect ? locSelect.value : '';
+
+                if (prodId && locId) {
+                    badge.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+                    fetch(`/StockIssue/GetStockAtLocation?productId=${prodId}&locationId=${locId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const stock = data.availableStock;
+                            badge.textContent = stock;
+                            if (stock <= 0) {
+                                badge.className = 'stock-badge badge bg-danger text-white';
+                                qtyInput.setCustomValidity('Vị trí này đã hết hàng');
+                            } else {
+                                badge.className = 'stock-badge badge bg-success text-white';
+                                qtyInput.max = stock;
+                                qtyInput.setCustomValidity('');
+                            }
+                        })
+                        .catch(() => {
+                            badge.textContent = 'Lỗi';
+                            badge.className = 'stock-badge badge bg-secondary text-white';
+                        });
+                } else {
+                    badge.textContent = '0';
+                    badge.className = 'stock-badge badge bg-light text-secondary border';
+                }
+            }
+
+            function updateRowIndices() {
+                const rows = tbody.querySelectorAll('.detail-row');
+                rows.forEach((row, index) => {
+                    row.querySelectorAll('select, input').forEach(input => {
+                        const name = input.getAttribute('name');
+                        if (name) {
+                            input.setAttribute('name', name.replace(/Details\[\d+\]/, `Details[${index}]`));
+                        }
+                    });
+                });
+            }
+
+            btnAdd.addEventListener('click', function () {
+                const firstRow = tbody.querySelector('.detail-row');
+                if (!firstRow) return;
+
+                const newRow = firstRow.cloneNode(true);
+                newRow.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+                newRow.querySelector('input[type="number"]').value = 1;
+                newRow.querySelector('.stock-badge').textContent = '0';
+                tbody.appendChild(newRow);
+                updateRowIndices();
+            });
+
+            tbody.addEventListener('change', function (e) {
+                if (e.target.classList.contains('product-select') || e.target.classList.contains('location-select')) {
+                    const row = e.target.closest('.detail-row');
+                    checkStock(row);
+                }
+            });
+
+            tbody.addEventListener('click', function (e) {
+                if (e.target.closest('.btn-remove-row')) {
+                    const rows = tbody.querySelectorAll('.detail-row');
+                    if (rows.length > 1) {
+                        e.target.closest('.detail-row').remove();
+                        updateRowIndices();
+                    } else {
+                        alert('Phiếu xuất phải có ít nhất 1 dòng linh kiện.');
+                    }
+                }
+            });
+
+            tbody.querySelectorAll('.detail-row').forEach(row => checkStock(row));
+        });
+    </script>
+}

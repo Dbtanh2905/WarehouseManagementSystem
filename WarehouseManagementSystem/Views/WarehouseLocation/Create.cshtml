@@ -1,0 +1,62 @@
+@model WarehouseManagementSystem.Models.WarehouseLocation
+@{
+    ViewData["Title"] = "Thêm vị trí kho mới";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="fw-bold mb-1">Thêm vị trí kệ kho mới</h4>
+                <p class="text-muted small mb-0">Khai báo mã ngăn kệ lưu trữ linh kiện</p>
+            </div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
+            </a>
+        </div>
+
+        <div class="wms-card">
+            <div class="wms-card-body p-4">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <label asp-for="LocationCode" class="form-label fw-semibold small"></label> <span class="text-danger">*</span>
+                            <input asp-for="LocationCode" class="form-control font-monospace text-uppercase" placeholder="VD: LOC-D01" />
+                            <span asp-validation-for="LocationCode" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-7 mb-3">
+                            <label asp-for="LocationName" class="form-label fw-semibold small"></label> <span class="text-danger">*</span>
+                            <input asp-for="LocationName" class="form-control" placeholder="VD: Kệ D01 - Khay chứa IC vi sai" />
+                            <span asp-validation-for="LocationName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold small"></label>
+                        <textarea asp-for="Description" class="form-control" rows="2" placeholder="Ghi chú về tải trọng, nhiệt độ bảo quản, tiêu chuẩn ESD..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input asp-for="IsActive" class="form-check-input" checked />
+                        <label asp-for="IsActive" class="form-check-label small fw-semibold text-secondary"></label>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-light">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-wms-primary px-4">
+                            <i class="bi bi-check2 me-1"></i>Lưu vị trí
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
